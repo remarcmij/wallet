@@ -44,8 +44,20 @@ class Wallet {
   }
 }
 
-function createWallet(name, cash = 0) {
-  return new Wallet(name, cash);
+function main() {
+  const walletJack = new Wallet('Jack', 100);
+  const walletJoe = new Wallet('Joe', 10);
+  const walletJane = new Wallet('Jane', 20);
+
+  walletJack.transferInto(walletJoe, 50);
+  walletJane.transferInto(walletJoe, 25);
+
+  walletJane.deposit(20);
+  walletJane.transferInto(walletJoe, 25);
+
+  walletJack.reportBalance();
+  walletJoe.reportBalance();
+  walletJane.reportBalance();
 }
 
-export default createWallet;
+main();

@@ -40,4 +40,20 @@ function createWallet(name, cash = 0) {
   };
 }
 
-export default createWallet;
+function main() {
+  const walletJack = createWallet('Jack', 100);
+  const walletJoe = createWallet('Joe', 10);
+  const walletJane = createWallet('Jane', 20);
+
+  walletJack.transferInto(walletJoe, 50);
+  walletJane.transferInto(walletJoe, 25);
+
+  walletJane.deposit(20);
+  walletJane.transferInto(walletJoe, 25);
+
+  walletJack.reportBalance();
+  walletJoe.reportBalance();
+  walletJane.reportBalance();
+}
+
+main();
