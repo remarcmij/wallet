@@ -15,14 +15,62 @@ Add a maximum daily withdrawal feature to **each** of the different wallet imple
 
 4. Update other methods as required to support the new functionality.
 
-Notes:
+## Public Interface vs Private Implementation
 
-The wallet objects in the exercise are examples of objects that combine data with methods that manipulate that data. This organization of data and methods is key foundation of Object-Oriented Programming (OOP) methodology. The object's methods are said to comprise the object's _behaviour_.
+Imagine that our various wallet implementations are used as libraries by third party developers, perhaps as part of a banking application. We would expect those developers to access the functionality of a wallet through the methods that we provided. We consider that to be the _public interface_ of our wallet. If third party developers would be allowed to manipulate the internals of the wallet (e.g. `cash`, `dailyAllowance`, etc.) we can no longer guarantee its correct working. We consider those internals to be _private implementation details_, and we would want the reserve the right to make implementation changes/improvements. So long as such changes are not impacting what can be observed through the _public interface_ there should not be any problem.
 
-In objects that combine data and behaviour in this way we often need to make a distinction between and object's _public interface_ and its (private) _implementation_.
+In the _closure_ version of the wallet the internal values (`cash`, `dailyAllowance`, etc.) are well protected against unwanted modification. Those values are simply not accessible outside of the `createWallet()` function.
 
-The _public interface_ can be thought of as a _contract_ between the user of the object (i.e. the external code that interacts with the object by calling its method.) This becomes particularly important when the object is part of a library or perhaps maintained by another team.
+In the other versions the private properties are accessible and prone to unwanted modification unless we take measures to either indicate that those properties are to be considered private or actually make those values inaccessible.
 
-Calling code should not concern itself with the internal implementation of the object. This should be considered private to the object and potentially subject to change. As long as the public interface is maintained, the owner of the object can change/improve the internal implementation, without this breaking calling code.
+When working with regular JavaScript objects there is no easy way to hide "private" properties. Over the years developers have adopted a naming convention for such private properties of plain old JavaScript object: they begin the property names with an underscore character, e.g.:
 
-In principle, calling code should not directly access value properties of an object and, even more important, should never directly mutate such properties. Where needed, the object can provide _getter_ and _setter_ methods through its public interface for this purpose.
+```js
+_cash, _name;
+```
+
+While this does not protect a properties against modification we can least indicate to other developers hat we consider such a property _private_, i.e. not to be accessed or manipulated directly.
+
+> For more information, see this StackOverflow question: [Is the underscore prefix for property and method names merely a convention?](https://stackoverflow.com/questions/4484424/is-the-underscore-prefix-for-property-and-method-names-merely-a-convention)
+
+Until fairly recently, we had no alternative to do the same when using the ES6 `class` syntax. However, in ES2022, now well supported in modern, evergreen browsers we have the ability to make class fields truly private, by using a `#` prefix:
+
+```js
+#hash, #name;
+```
+
+> More information on MDN: [Private class features](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Private_class_fields)
+
+## Getters and Setters
+
+Sometimes we do want to provide access to internal object/class fields, but in a controlled way through the _public interface_. In this case we can use _getters_ and _setters_. For instance, if we want to give readonly access to a private field we can provide a _getter_ method (but no _setter_) that just returns the value of the private field. For instance:
+
+```js
+getCash() {
+  return this._cash;
+}
+
+getName() {
+  return this._name;
+}
+```
+
+In a _setter_ method we could add validations to ensure that only valid values are accepted to update the private field, e.g.
+
+```js
+setEmail(email) {
+  // See: https://www.regular-expressions.info/index.html
+  if (/^\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b.test(email)) {
+    this._email = email
+  } else {
+    console.error('Invalid email address!');
+  }
+}
+```
+
+In ES6 classes you can use special _getters_ and _setters_. You will find an example of an ES6 _getter_ in the `ex2-classes.js`.
+
+> More information on ES6 getters and setters on MDN:
+>
+> - [getter](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get)
+> - [setter](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set)
