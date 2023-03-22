@@ -17,19 +17,19 @@ Add a maximum daily withdrawal feature to **each** of the different wallet imple
 
 ## Public Interface vs Private Implementation
 
-Imagine that our various wallet implementations are used as libraries by third party developers, perhaps as part of a banking application. We would expect those developers to access the functionality of a wallet through the methods that we provided. We consider that to be the _public interface_ of our wallet. If third party developers would be allowed to manipulate the internals of the wallet (e.g. `cash`, `dailyAllowance`, etc.) we can no longer guarantee its correct working. We consider those internals to be _private implementation details_, and we would want the reserve the right to make implementation changes/improvements. So long as such changes are not impacting what can be observed through the _public interface_ there should not be any problem.
+Imagine that our various wallet implementations are used as libraries by third party developers, perhaps as part of a banking application. We would expect those developers to access the functionality of our wallet through the methods that we provide. We consider that to be the _public interface_ of our wallet. If third party developers would be allowed to manipulate the internals of the wallet (e.g. `cash`, `dailyAllowance`, etc.) we can no longer guarantee its correct working. We consider those internals to be _private implementation details_, and we would want the reserve the right to make implementation changes/improvements. So long as such changes are not impacting what can be observed through the _public interface_ there should not be any problem.
 
-In the _closure_ version of the wallet the internal values (`cash`, `dailyAllowance`, etc.) are well protected against unwanted modification. Those values are simply not accessible outside of the `createWallet()` function.
+In the _closure_ version of our wallet the internal values (`cash`, `dailyAllowance`, etc.) are well protected against unwanted modification. Those values are simply not accessible outside of the `createWallet()` function.
 
-In the other versions the private properties are accessible and prone to unwanted modification unless we take measures to either indicate that those properties are to be considered private or actually make those values inaccessible.
+In the other (object-based) versions the private properties are accessible and prone to unwanted modification unless we take measures to either indicate that those properties are to be considered private or actually make those properties inaccessible from the outside.
 
-When working with regular JavaScript objects there is no easy way to hide "private" properties. Over the years developers have adopted a naming convention for such private properties of plain old JavaScript object: they begin the property names with an underscore character, e.g.:
+When working with regular JavaScript objects there is no easy way to hide "private" properties. As a remedy developers have adopted a naming convention over the years for such private properties in plain old JavaScript object: they begin the property names with an underscore character, e.g.:
 
 ```js
 _cash, _name;
 ```
 
-While this does not protect a properties against modification we can least indicate to other developers hat we consider such a property _private_, i.e. not to be accessed or manipulated directly.
+While this does not protect properties against modification we can least indicate to other developers that such a properties are to be considered _private_, i.e. not to be accessed or manipulated directly.
 
 > For more information, see this StackOverflow question: [Is the underscore prefix for property and method names merely a convention?](https://stackoverflow.com/questions/4484424/is-the-underscore-prefix-for-property-and-method-names-merely-a-convention)
 
@@ -69,6 +69,18 @@ setEmail(email) {
 ```
 
 In ES6 classes you can use special _getters_ and _setters_. You will find an example of an ES6 _getter_ in the `ex2-classes.js`.
+
+```js
+get name() {
+  return this.#name;
+}
+```
+
+You can now access `name` with property syntax (i.e., without parentheses):
+
+```js
+console.log(myWallet.name);
+```
 
 > More information on ES6 getters and setters on MDN:
 >
